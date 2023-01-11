@@ -1,0 +1,95 @@
+import pandas as pd
+import numpy as np
+
+
+configfile: "config/config.yaml"
+
+
+IDS = [str(i) for i in config["run_ids"]]
+N_RUNS = len(IDS)
+print(IDS, N_RUNS)
+
+samples = pd.read_csv("config/samples.csv", index_col="folder")
+FOLDERS = samples.index.tolist()
+
+
+# Load rules
+include: "rules/trajs.smk"
+include: "rules/protein_rms.smk"
+include: "rules/peptide_rms.smk"
+include: "rules/n980_dists.smk"
+include: "rules/f979_dists.smk"
+include: "rules/plip.smk"
+include: "rules/water.smk"
+
+
+pep_input = []
+plip_input = []
+for f in FOLDERS:
+    if samples.loc[f, "peptide"] == "yes":
+        pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsd.png")
+        pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsf.png")
+        plip_input.append(f"results/{f}/plip/plip_data.xlsx")
+        plip_input.append(f"results/{f}/plip/all_resi_hydrophobic_hydrophilic.png")
+
+k18ac_input = []
+k18ac_clip_10ns_input = []
+for f in FOLDERS:
+    if (
+        samples.loc[f, "k18_type"] == "K18Ac"
+        and not samples.loc[f, "mutations"] == "N980A"
+    ):
+        k18ac_input.append(f"results/{f}/n980_dists/N980_dist_heatmap.png")
+        k18ac_input.append(f"results/{f}/n980_dists/N980_dist_kde.png")
+        k18ac_clip_10ns_input.append(
+            f"results/{f}/n980_dists/N980_dist_kde_clip_10ns.png"
+        )
+
+
+rule all:
+    """
+    Basic analysis for t24 simulations, either apo or with peptide
+    - For runs with the peptide, add the peptide inputs
+
+    Full dataset used during analysis
+    """
+    input:
+        pep_input,
+        k18ac_input,
+        index=expand("runs/{folder}/index.ndx", folder=FOLDERS),
+        protein_gro=expand("runs/{folder}/protein_noh2o.gro", folder=FOLDERS),
+        fitted_xtc=expand("runs/{folder}/{i}-whole_fit.xtc", folder=FOLDERS, i=IDS),
+        protein_rmsd=expand(
+            "results/{folder}/protein/t24_backbone_rmsd.png", folder=FOLDERS
+        ),
+        protein_rmsf=expand("results/{folder}/protein/t24_rmsf.png", folder=FOLDERS),
+        f979_y935_heatmap=expand(
+            "results/{folder}/f979_dists/F979_Y935_heatmap.png", folder=FOLDERS
+        ),
+        f979_y935_kde=expand(
+            "results/{folder}/f979_dists/F979_Y935_kde.png", folder=FOLDERS
+        ),
+        water_density=expand(
+            "results/{folder}/water_density/water_xtal_{i}.png",
+            folder=FOLDERS,
+            i=["1.0", "1.5", "2.0"],
+        ),
+
+
+rule clip_10ns_analysis:
+    """
+    For specific analyses with the first 10 ns of simulation data removed from each run
+    """
+    input:
+        k18ac_clip_10ns_input,
+        f979_y935_kde_clip_10ns=expand(
+            "results/{folder}/f979_dists/F979_Y935_kde_clip_10ns.png", folder=FOLDERS
+        ),
+
+
+rule get_plip:
+    """
+    Specifically for running PLIP analysis
+    """
+    input:
+        plip_input,
