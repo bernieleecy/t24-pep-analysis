@@ -19,16 +19,21 @@ include: "rules/protein_rms.smk"
 include: "rules/peptide_rms.smk"
 include: "rules/n980_dists.smk"
 include: "rules/f979_dists.smk"
+include: "rules/glutamates_dists.smk"
 include: "rules/plip.smk"
 include: "rules/water.smk"
 
 
 pep_input = []
 plip_input = []
+clip_10ns_input = []
 for f in FOLDERS:
     if samples.loc[f, "peptide"] == "yes":
         pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsd.png")
         pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsf.png")
+        pep_input.append(f"results/{f}/glutamate_dists/glutamate_violins.png")
+        pep_input.append(f"results/{f}/glutamate_dists/D926_E985_R17_heatmap.png")
+        clip_10ns_input.append(f"results/{f}/glutamate_dists/glutamate_violins_clip_10ns.png")
         plip_input.append(f"results/{f}/plip/plip_data.xlsx")
         plip_input.append(f"results/{f}/plip/all_resi_hydrophobic_hydrophilic.png")
 
@@ -81,6 +86,7 @@ rule clip_10ns_analysis:
     For specific analyses with the first 10 ns of simulation data removed from each run
     """
     input:
+        clip_10ns_input,
         k18ac_clip_10ns_input,
         f979_y935_kde_clip_10ns=expand(
             "results/{folder}/f979_dists/F979_Y935_kde_clip_10ns.png", folder=FOLDERS

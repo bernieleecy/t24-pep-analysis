@@ -4,24 +4,6 @@
 import os
 
 
-rule convert_gro:
-    """
-    For water density plotting
-    """
-    input:
-        "runs/{folder}/complex_ions.gro",
-    output:
-        "runs/{folder}/complex_ions.pdb",
-    params:
-        prefix="runs/{folder}",
-    shell:
-        """
-        echo "Protein_ZN" |
-        gmx editconf -f {input} -n {params.prefix}/{config[ndx_file]} \
-                     -o {output}
-        """
-
-
 rule make_ndx:
     """
     Params depend on the protein
@@ -49,6 +31,24 @@ rule make_ndx:
                 'echo -e "{params.grp_1}\n{params.grp_2}\n{params.grp_3}\n q "'
                 "| gmx make_ndx -f {input} -o {output}"
             )
+
+
+rule convert_gro:
+    """
+    For water density plotting
+    """
+    input:
+        xtc="runs/{folder}/complex_ions.gro",
+        ndx="runs/{folder}/index.ndx"
+    output:
+        "runs/{folder}/complex_ions.pdb",
+    params:
+        prefix="runs/{folder}",
+    shell:
+        """
+        echo "Protein_ZN" |
+        gmx editconf -f {input.xtc} -n {input.ndx} -o {output}
+        """
 
 
 rule make_protein_noh2o:
@@ -121,13 +121,14 @@ rule make_plip_traj:
 
 
 rule align_wat_trajs:
-    '''
+    """
     Previously used Backbone for final fitting
 
     Here, use the protein backbone only for final fitting as this is more appropriate
-    '''
+    """
     input:
-        "runs/{folder}/md_{i}.xtc",
+        xtc="runs/{folder}/md_{i}.xtc",
+        ndx="runs/{folder}/index.ndx",
     output:
         align="runs/{folder}/{i}-align.xtc",
         traj_a=temporary("runs/{folder}/a_{i}.xtc"),
@@ -138,8 +139,8 @@ rule align_wat_trajs:
     shell:
         """
         echo 'Protein_ZN' 0 |
-        gmx trjconv -f {input} -s {params.prefix}/{config[md_tpr]} \
-                    -n {params.prefix}/{config[ndx_file]} -o {output.traj_a} \
+        gmx trjconv -f {input.xtc} -s {params.prefix}/{config[md_tpr]} \
+                    -n {input.ndx} -o {output.traj_a} \
                     -pbc cluster -dt 200
 
         echo 0 |
@@ -148,12 +149,12 @@ rule align_wat_trajs:
 
         echo 'Protein_ZN' 0 |
         gmx trjconv -f {output.traj_b} -s {params.prefix}/{config[md_tpr]} \
-                    -n {params.prefix}/{config[ndx_file]} -o {output.traj_c} \
+                    -n {input.ndx} -o {output.traj_c} \
                     -pbc mol -center -ur compact
 
         echo 'r_3-187_&_Backbone' 0 |
         gmx trjconv -f {output.traj_c} -s {params.prefix}/{config[em_tpr]} \
-                    -n {params.prefix}/{config[ndx_file]} -o {output.align} \
+                    -n {input.ndx} -o {output.align} \
                     -fit rot+trans
         """
 

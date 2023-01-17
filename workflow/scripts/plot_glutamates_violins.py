@@ -14,12 +14,10 @@ plt.style.use(snakemake.config['mpl_style'])
 
 glu_1_dist = cyg.XvgFile(snakemake.input.glu_1_r17).process_data().y_data*10
 glu_2_dist = cyg.XvgFile(snakemake.input.glu_2_r17).process_data().y_data*10
-glu_3_dist = cyg.XvgFile(snakemake.input.glu_3_r17).process_data().y_data*10
 labels = [f'{snakemake.params.glu_1}\u2013T3A-R17',
-          f'{snakemake.params.glu_2}\u2013T3A-R17',
-          f'{snakemake.params.glu_3}\u2013T3A-R17',]
+          f'{snakemake.params.glu_2}\u2013T3A-R17',]
 
-data_list = [glu_1_dist, glu_2_dist, glu_3_dist]
+data_list = [glu_1_dist, glu_2_dist]
 
 df = pd.DataFrame(data_list).T
 print(df.describe())

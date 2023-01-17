@@ -3,7 +3,8 @@ import os
 
 checkpoint make_plip_pdbs:
     input:
-        "runs/{folder}/plip_traj.xtc",
+        xtc="runs/{folder}/plip_traj.xtc",
+        ndx="runs/{folder}/index.ndx"
     output:
         directory("results/{folder}/plip/pdbs"),
     params:
@@ -12,8 +13,8 @@ checkpoint make_plip_pdbs:
         """
         mkdir -p {output}
         echo 'Protein_ZN' |
-        gmx trjconv -f {input} -s {params.prefix}/{config[em_tpr]} \
-                    -n {params.prefix}/{config[ndx_file]} \
+        gmx trjconv -f {input.xtc} -s {params.prefix}/{config[em_tpr]} \
+                    -n {input.ndx} \
                     -o {output}/extracted.pdb -sep -nzero 3
         sed -i '' '/TITLE/d;/MODEL/d;/ENDMDL/d' {output}/extracted*.pdb
         sed -i '' 's/CYZ/CYS/g;s/HEZ/HIS/g;s/HIE/HIS/g;s/HID/HIS/g' {output}/extracted*.pdb
