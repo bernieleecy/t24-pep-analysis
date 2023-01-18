@@ -84,6 +84,9 @@ rule all:
             "results/{folder}/protein/t24_backbone_rmsd.png", folder=FOLDERS
         ),
         protein_rmsf=expand("results/{folder}/protein/t24_rmsf.png", folder=FOLDERS),
+        protein_rmsf_specific=expand(
+            "results/{folder}/protein/t24_rmsf_specific_resi.png", folder=FOLDERS
+        ),
         f979_y935_heatmap=expand(
             "results/{folder}/f979_dists/F979_Y935_heatmap.png", folder=FOLDERS
         ),

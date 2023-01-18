@@ -85,3 +85,18 @@ rule plot_t24_rmsf:
         "results/{folder}/protein/t24_rmsf.png",
     script:
         "../scripts/plot_protein_rmsf.py"
+
+
+rule plot_t24_rmsf_indiv_resi:
+    '''
+    For zooming in on specific protein residues (backbone RMSF here)
+    '''
+    input:
+        get_rmsf_xvgs,
+    output:
+        "results/{folder}/protein/t24_rmsf_specific_resi.png",
+    params:
+        resi_of_interest = [923, 932, 935, 979, 980, 985, 986],
+        ymax = 3,
+    script:
+        "../scripts/plot_rmsf_specific_resi.py"
