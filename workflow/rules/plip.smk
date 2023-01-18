@@ -4,7 +4,7 @@ import os
 checkpoint make_plip_pdbs:
     input:
         xtc="runs/{folder}/plip_traj.xtc",
-        ndx="runs/{folder}/index.ndx"
+        ndx="runs/{folder}/index.ndx",
     output:
         directory("results/{folder}/plip/pdbs"),
     params:

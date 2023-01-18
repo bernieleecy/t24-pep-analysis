@@ -25,8 +25,12 @@ rule make_pep_rmsd_xvgs:
 
 
 def get_pep_rmsd_xvgs(wildcards):
-    return [os.path.join('results',wildcards.folder,'peptide/data',
-            run+'-pep_backbone_rmsd.xvg') for run in IDS]
+    return [
+        os.path.join(
+            "results", wildcards.folder, "peptide/data", run + "-pep_backbone_rmsd.xvg"
+        )
+        for run in IDS
+    ]
 
 
 rule plot_pep_rmsd_all:
@@ -34,9 +38,9 @@ rule plot_pep_rmsd_all:
     Specify time units (usually ns)
     """
     input:
-        get_pep_rmsd_xvgs
+        get_pep_rmsd_xvgs,
     output:
-        "results/{folder}/peptide/t24_pep_backbone_rmsd.png"
+        "results/{folder}/peptide/t24_pep_backbone_rmsd.png",
     params:
         ylabel="RMSD (Å)",
         time_unit="ns",
@@ -56,7 +60,7 @@ rule make_pep_rmsf_xvgs:
     output:
         "results/{folder}/peptide/data/{i}-pep_backbone_rmsf.xvg",
     params:
-        prefix="runs/{folder}"
+        prefix="runs/{folder}",
     shell:
         """
         echo 'r_188-208_&_Backbone' |
@@ -66,14 +70,18 @@ rule make_pep_rmsf_xvgs:
 
 
 def get_pep_rmsf_xvgs(wildcards):
-    return [os.path.join('results',wildcards.folder,'peptide/data',
-            run+'-pep_backbone_rmsf.xvg') for run in IDS]
+    return [
+        os.path.join(
+            "results", wildcards.folder, "peptide/data", run + "-pep_backbone_rmsf.xvg"
+        )
+        for run in IDS
+    ]
 
 
 rule plot_pep_rmsf:
     input:
-        get_pep_rmsf_xvgs
+        get_pep_rmsf_xvgs,
     output:
-        'results/{folder}/peptide/t24_pep_backbone_rmsf.png'
+        "results/{folder}/peptide/t24_pep_backbone_rmsf.png",
     script:
-        '../scripts/plot_pep_rmsf.py'
+        "../scripts/plot_pep_rmsf.py"

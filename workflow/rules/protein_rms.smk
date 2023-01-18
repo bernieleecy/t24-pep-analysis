@@ -25,8 +25,12 @@ rule make_protein_rmsd_xvgs:
 
 
 def get_rmsd_xvgs(wildcards):
-    return [os.path.join('results',wildcards.folder,'protein/data',
-            run+'-backbone_rmsd.xvg') for run in IDS]
+    return [
+        os.path.join(
+            "results", wildcards.folder, "protein/data", run + "-backbone_rmsd.xvg"
+        )
+        for run in IDS
+    ]
 
 
 rule plot_protein_rmsd_all:
@@ -34,9 +38,9 @@ rule plot_protein_rmsd_all:
     Specify time units (usually ns)
     """
     input:
-        get_rmsd_xvgs
+        get_rmsd_xvgs,
     output:
-        "results/{folder}/protein/t24_backbone_rmsd.png"
+        "results/{folder}/protein/t24_backbone_rmsd.png",
     params:
         ylabel="RMSD (Å)",
         time_unit="ns",
@@ -52,11 +56,11 @@ rule make_protein_rmsf_xvgs:
     """
     input:
         xtc="runs/{folder}/{i}-whole_fit.xtc",
-        ndx="runs/{folder}/index.ndx"
+        ndx="runs/{folder}/index.ndx",
     output:
         "results/{folder}/protein/data/{i}-backbone_rmsf.xvg",
     params:
-        prefix="runs/{folder}"
+        prefix="runs/{folder}",
     shell:
         """
         echo 'r_3-187_&_Backbone' |
@@ -66,14 +70,18 @@ rule make_protein_rmsf_xvgs:
 
 
 def get_rmsf_xvgs(wildcards):
-    return [os.path.join('results',wildcards.folder,'protein/data',
-            run+'-backbone_rmsf.xvg') for run in IDS]
+    return [
+        os.path.join(
+            "results", wildcards.folder, "protein/data", run + "-backbone_rmsf.xvg"
+        )
+        for run in IDS
+    ]
 
 
 rule plot_t24_rmsf:
     input:
-        get_rmsf_xvgs
+        get_rmsf_xvgs,
     output:
-        'results/{folder}/protein/t24_rmsf.png'
+        "results/{folder}/protein/t24_rmsf.png",
     script:
-        '../scripts/plot_t24_rmsf.py'
+        "../scripts/plot_t24_rmsf.py"

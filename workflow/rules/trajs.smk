@@ -39,7 +39,7 @@ rule convert_gro:
     """
     input:
         xtc="runs/{folder}/complex_ions.gro",
-        ndx="runs/{folder}/index.ndx"
+        ndx="runs/{folder}/index.ndx",
     output:
         "runs/{folder}/complex_ions.pdb",
     params:

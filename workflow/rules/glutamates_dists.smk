@@ -52,10 +52,10 @@ rule make_t24_e985_xvgs:
 
 
 rule plot_glu_violins:
-    '''
+    """
     Output of previous rules needs to be supplied as a file not a list
     (this applies to all the plotting rules in this file)
-    '''
+    """
     input:
         glu_1_r17=rules.make_t24_d926_xvgs.output[0],
         glu_2_r17=rules.make_t24_e985_xvgs.output[0],
