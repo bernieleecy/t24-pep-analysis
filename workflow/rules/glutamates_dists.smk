@@ -64,6 +64,7 @@ rule plot_glu_violins:
     params:
         glu_1="D926",
         glu_2="E985",
+        dist_on=True,
     script:
         "../scripts/plot_glutamates_violins.py"
 
@@ -133,5 +134,6 @@ rule plot_glu_violins_clip_10ns:
     params:
         glu_1="D926",
         glu_2="E985",
+        dist_on=True,
     script:
         "../scripts/plot_glutamates_violins.py"

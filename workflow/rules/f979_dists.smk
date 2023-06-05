@@ -56,6 +56,7 @@ rule plot_t24_y935_f979_kde:
     params:
         xmin=3.5,
         xmax=12,
+        dist_on=True,
     script:
         "../scripts/plot_kde.py"
 
@@ -85,5 +86,6 @@ rule plot_t24_y935_f979_kde_clip_10ns:
     params:
         xmin=3.5,
         xmax=12,
+        dist_on=True,
     script:
         "../scripts/plot_kde.py"

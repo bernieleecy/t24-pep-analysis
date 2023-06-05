@@ -49,6 +49,74 @@ rule plot_protein_rmsd_all:
         "../scripts/plot_time_series_multi.py"
 
 
+rule make_brd_rmsd_ndx:
+    """
+    Making index file for bromodomain RMSD
+    Define from resi 901 to the end (1007) of the protein
+    Group 8 is the bromodomain backbone
+    """
+    input:
+        "runs/{folder}/md_1.tpr",
+    output:
+        "runs/{folder}/brd.ndx",
+    params:
+        grp_1="ri 3-187 & 8",
+        grp_2="r 901-1007 & 8",
+    shell:
+        """
+        echo -e '{params.grp_1}\n {params.grp_2}\nq' |
+        gmx make_ndx -f {input} -o {output}
+        """
+
+
+rule make_brd_rmsd_xvgs:
+    """
+    Calculating backbone RMSD of bromodomain residues
+    Align to em.tpr
+
+    Note that -tu ns makes the last few decimal places for time a bit weird
+    But it doesn't affect plotting/analysis
+    """
+    input:
+        xtc="runs/{folder}/{i}-whole_fit.xtc",
+        ndx=rules.make_brd_rmsd_ndx.output,
+    output:
+        "results/{folder}/protein/data/{i}-brd_backbone_rmsd.xvg",
+    params:
+        prefix="runs/{folder}",
+    shell:
+        """
+        echo 'r_3-187_&_Backbone' 'r_901-1007_&_Backbone' |
+        gmx rms -f {input.xtc} -s {params.prefix}/{config[em_tpr]} \
+                -n {input.ndx} -o {output} -tu ns
+        """
+
+
+def get_brd_rmsd_xvgs(wildcards):
+    return [
+        os.path.join(
+            "results", wildcards.folder, "protein/data", run + "-brd_backbone_rmsd.xvg"
+        )
+        for run in IDS
+    ]
+
+
+rule plot_brd_backbone_rmsd_all:
+    """
+    Specify time units (usually ns)
+    """
+    input:
+        get_brd_rmsd_xvgs,
+    output:
+        "results/{folder}/protein/t24_brd_backbone_rmsd.png",
+    params:
+        ylabel="RMSD (Å)",
+        time_unit="ns",
+        ymax=5,
+    script:
+        "../scripts/plot_time_series_multi.py"
+
+
 rule make_protein_rmsf_xvgs:
     """
     Calculating backbone RMSF of protein residues
@@ -88,15 +156,15 @@ rule plot_t24_rmsf:
 
 
 rule plot_t24_rmsf_indiv_resi:
-    '''
+    """
     For zooming in on specific protein residues (backbone RMSF here)
-    '''
+    """
     input:
         get_rmsf_xvgs,
     output:
         "results/{folder}/protein/t24_rmsf_specific_resi.png",
     params:
-        resi_of_interest = [923, 932, 935, 979, 980, 985, 986],
-        ymax = 3,
+        resi_of_interest=[923, 932, 935, 979, 980, 985, 986],
+        ymax=3,
     script:
         "../scripts/plot_rmsf_specific_resi.py"
