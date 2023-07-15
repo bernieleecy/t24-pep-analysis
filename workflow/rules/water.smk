@@ -25,6 +25,7 @@ rule plot_water_density:
       across different crystal structures
 
     Saves a png at different sigma levels, xtal waters only
+    Hide resi 125 for consistency
     """
     input:
         complex="runs/{folder}/complex.gro",
@@ -43,15 +44,16 @@ rule plot_water_density:
                  \nload {input.water} \
                  \nalign complex, complex_ions \
                  \ndelete complex_ions \
+                 \nremove resi 125
                  \nextract bd_wat, resname HOH \
                  \nhide sticks lines \
                  \nshow lines, resi 18 and not name H* \
                  \nshow spheres, bd_wat and name OW \
                  \nset sphere_scale, 0.2, bd_wat \
                  \n \
-                 \nisomesh mesh_2.0, water, 2.0, bd_wat, carve=2.0 \
-                 \nisomesh mesh_1.5, water, 1.5, bd_wat, carve=2.0 \
-                 \nisomesh mesh_1.0, water, 1.0, bd_wat, carve=2.0 \
+                 \nisomesh mesh_2.0, water, 2.0, bd_wat \
+                 \nisomesh mesh_1.5, water, 1.5, bd_wat \
+                 \nisomesh mesh_1.0, water, 1.0, bd_wat \
                  \nisomesh mesh_all_2.0, water, 2.0 \
                  \nisomesh mesh_all_1.5, water, 1.5 \
                  \nisomesh mesh_all_1.0, water, 1.0 \

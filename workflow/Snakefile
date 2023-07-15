@@ -19,6 +19,7 @@ include: "rules/protein_rms.smk"
 include: "rules/peptide_rms.smk"
 include: "rules/n980_dists.smk"
 include: "rules/n980_dihs.smk"
+include: "rules/w828_dists.smk"
 include: "rules/f979_dists.smk"
 include: "rules/y935_dists.smk"
 include: "rules/loop_dists.smk"
@@ -35,6 +36,8 @@ for f in FOLDERS:
     if samples.loc[f, "peptide"] == "yes":
         pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsd.png")
         pep_input.append(f"results/{f}/peptide/t24_pep_backbone_rmsf.png")
+        pep_input.append(f"results/{f}/w828_dists/w828_k9me3_dist_heatmap.png")
+        pep_input.append(f"results/{f}/w828_dists/w828_k9me3_dist_kde.png")
         pep_input.append(f"results/{f}/glutamate_dists/glutamate_violins.png")
         pep_input.append(f"results/{f}/glutamate_dists/D926_E985_R17_heatmap.png")
         pep_input.extend(

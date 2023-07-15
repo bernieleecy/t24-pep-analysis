@@ -64,10 +64,7 @@ rule plot_t24_n980_chi_all_hist:
     output:
         "results/{folder}/n980_dihs/N980_chi{x}_hist.png",
     params:
-        bins=36,
-        xmin=-180,
-        xmax=180,
         xlabel="chi{x} angle (°)",
-        ymax=40000,
+        ymax=15000,
     script:
         "../scripts/plot_hist.py"
